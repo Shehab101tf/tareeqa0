@@ -1,0 +1,43 @@
+{
+  "sales": {
+    "title": "إدارة المبيعات",
+    "saleNumber": "رقم البيع",
+    "customer": "العميل",
+    "cashier": "الكاشير",
+    "items": "الأصناف",
+    "subtotal": "المجموع الفرعي",
+    "tax": "الضريبة",
+    "discount": "الخصم",
+    "total": "الإجمالي",
+    "paymentMethod": "طريقة الدفع",
+    "paymentStatus": "حالة الدفع",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "viewSale": "عرض البيع",
+    "printReceipt": "طباعة الفاتورة",
+    "refundSale": "استرداد البيع",
+    "todaysSales": "مبيعات اليوم",
+    "totalTransactions": "إجمالي المعاملات",
+    "averageTransaction": "متوسط المعاملة",
+    "paidTransactions": "المعاملات المدفوعة",
+    "paymentMethods": {
+      "cash": "نقداً",
+      "card": "بطاقة",
+      "mobile": "محفظة إلكترونية",
+      "credit": "آجل"
+    },
+    "paymentStatuses": {
+      "paid": "مدفوع",
+      "pending": "معلق",
+      "partial": "جزئي",
+      "refunded": "مسترد"
+    },
+    "filters": {
+      "all": "الكل",
+      "today": "اليوم",
+      "yesterday": "أمس",
+      "thisWeek": "هذا الأسبوع",
+      "thisMonth": "هذا الشهر"
+    }
+  }
+}

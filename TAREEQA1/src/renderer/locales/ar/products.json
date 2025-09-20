@@ -1,0 +1,43 @@
+{
+  "products": {
+    "title": "إدارة المنتجات",
+    "addProduct": "إضافة منتج",
+    "editProduct": "تعديل المنتج",
+    "deleteProduct": "حذف المنتج",
+    "productName": "اسم المنتج",
+    "productCode": "كود المنتج",
+    "barcode": "الباركود",
+    "category": "الفئة",
+    "supplier": "المورد",
+    "costPrice": "سعر التكلفة",
+    "sellingPrice": "سعر البيع",
+    "stock": "المخزون",
+    "minStock": "الحد الأدنى للمخزون",
+    "unit": "الوحدة",
+    "description": "الوصف",
+    "image": "الصورة",
+    "isActive": "نشط",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث",
+    "totalProducts": "إجمالي المنتجات",
+    "activeProducts": "المنتجات النشطة",
+    "inactiveProducts": "المنتجات غير النشطة",
+    "lowStockProducts": "منتجات بمخزون منخفض",
+    "outOfStockProducts": "منتجات غير متوفرة",
+    "categories": {
+      "all": "الكل",
+      "beverages": "مشروبات",
+      "snacks": "وجبات خفيفة",
+      "bakery": "مخبوزات",
+      "dairy": "ألبان",
+      "grains": "حبوب",
+      "oils": "زيوت",
+      "other": "أخرى"
+    },
+    "stockStatus": {
+      "inStock": "متوفر",
+      "lowStock": "مخزون منخفض",
+      "outOfStock": "غير متوفر"
+    }
+  }
+}
