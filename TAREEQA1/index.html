@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self';" />
+  <title>طريقة POS - نظام نقاط البيع المتقدم</title>
+  
+  <!-- Preload critical fonts -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  
+  <!-- Fallback for fonts -->
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap">
+  </noscript>
+  
+  <!-- App icon -->
+  <link rel="icon" type="image/png" href="/resources/icon.png" />
+  
+  <!-- Meta tags for Egyptian market -->
+  <meta name="description" content="نظام نقاط البيع الاحترافي للشركات المصرية - طريقة POS" />
+  <meta name="keywords" content="نقطة البيع, POS, مصر, محاسبة, مبيعات, مخزون" />
+  <meta name="author" content="Tareeqa Technologies" />
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <!-- Windows 7+ compatibility -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <!-- Prevent zooming on mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- Theme colors -->
+  <meta name="theme-color" content="#1e3a8a" />
+  <meta name="msapplication-TileColor" content="#1e3a8a" />
+  
+  <!-- Preconnect to external resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <style>
+    /* Critical CSS for initial load */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html {
+      font-size: 16px;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      height: 100%;
+    }
+    
+    body {
+      font-family: 'Cairo', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #a5b4fc 0%, #c7d2fe 50%, #e0e7ff 100%);
+      min-height: 100vh;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      color: #0f172a;
+      font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      direction: rtl;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #root {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Loading screen styles */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      color: white;
+    }
+    
+    .loading-logo {
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: pulse 2s infinite;
+    }
+    
+    .loading-text {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    
+    .loading-subtitle {
+      font-size: 16px;
+      opacity: 0.8;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Windows 7 fallbacks */
+    @supports not (backdrop-filter: blur(12px)) {
+      .loading-logo {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: none;
+      }
+    }
+    
+    /* High contrast mode */
+    @media (prefers-contrast: high) {
+      .loading-screen {
+        background: #000;
+        color: #fff;
+      }
+      
+      .loading-logo {
+        background: #fff;
+        color: #000;
+        border: 2px solid #fff;
+      }
+    }
+    
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .loading-logo,
+      .loading-spinner {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-logo">
+      <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 5L50 15V45L30 55L10 45V15L30 5Z" stroke="currentColor" stroke-width="2" fill="none"/>
+        <circle cx="30" cy="30" r="8" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="loading-text">طريقة POS</div>
+    <div class="loading-subtitle">نظام نقاط البيع المتقدم</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Main app container -->
+  <div id="root" style="width: 100%; height: 100vh; display: flex; flex-direction: column;"></div>
+
+  <!-- App initialization script -->
+  <script>
+    // Hide loading screen when app loads
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set up error handling
+      window.addEventListener('error', (event) => {
+        console.error('Application error:', event.error);
+      });
+      
+      window.addEventListener('unhandledrejection', (event) => {
+        console.error('Unhandled promise rejection:', event.reason);
+      });
+      
+      // Initialize app after a short delay to show loading screen
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.style.opacity = '0';
+          loadingScreen.style.transition = 'opacity 0.5s ease-out';
+          setTimeout(() => {
+            loadingScreen.remove();
+          }, 500);
+        }
+      }, 1000);
+    });
+    
+    // Windows 7 compatibility checks
+    if (navigator.userAgent.includes('Windows NT 6.1')) {
+      document.body.classList.add('windows-7');
+      console.log('Windows 7 compatibility mode enabled');
+    }
+    
+    // RTL/LTR detection
+    const savedLanguage = localStorage.getItem('tareeqa-pos-language') || 'ar';
+    if (savedLanguage === 'en') {
+      document.documentElement.dir = 'ltr';
+      document.documentElement.lang = 'en';
+      document.body.style.textAlign = 'left';
+      document.body.style.fontFamily = "'Inter', system-ui, sans-serif";
+    }
+  </script>
+
+  <!-- Module script for modern browsers -->
+  <script type="module" src="/src/renderer/index.tsx"></script>
+  
+  <!-- Fallback for older browsers -->
+  <script nomodule>
+    console.warn('This application requires a modern browser with ES6 module support');
+    document.body.innerHTML = '<div style="padding: 40px; text-align: center; font-family: Arial, sans-serif;"><h1>متصفح غير مدعوم</h1><p>يرجى استخدام متصفح حديث لتشغيل هذا التطبيق</p></div>';
+  </script>
+</body>
+</html>

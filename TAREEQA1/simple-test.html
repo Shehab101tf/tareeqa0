@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tareeqa POS - Frontend Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            background: rgba(34, 197, 94, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: rgba(59, 130, 246, 1);
+            transform: translateY(-2px);
+        }
+        
+        .success {
+            background: rgba(34, 197, 94, 0.8);
+        }
+        
+        .success:hover {
+            background: rgba(34, 197, 94, 1);
+        }
+        
+        .info {
+            background: rgba(168, 85, 247, 0.8);
+        }
+        
+        .info:hover {
+            background: rgba(168, 85, 247, 1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 طريقة POS</h1>
+        <p>نظام نقاط البيع المتقدم</p>
+        <p>Tareeqa Point of Sale System</p>
+        
+        <div class="status">
+            <h2>✅ Frontend Working!</h2>
+            <p>الواجهة الأمامية تعمل بنجاح</p>
+            <p>HTML + CSS + JavaScript Loading Successfully</p>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="testAlert()">
+                اختبار التنبيه
+            </button>
+            
+            <button class="success" onclick="testConsole()">
+                اختبار وحدة التحكم
+            </button>
+            
+            <button class="info" onclick="testElectron()">
+                اختبار Electron
+            </button>
+        </div>
+        
+        <div id="output" style="margin-top: 20px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; display: none;">
+            <h3>النتائج:</h3>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Tareeqa POS Frontend Test Loaded');
+        console.log('📍 Current URL:', window.location.href);
+        console.log('🌐 User Agent:', navigator.userAgent);
+        
+        function testAlert() {
+            alert('🎉 التنبيه يعمل بنجاح!\nAlert working successfully!');
+        }
+        
+        function testConsole() {
+            console.log('✅ Console test successful - اختبار وحدة التحكم ناجح');
+            showOutput('Console test completed - تم اختبار وحدة التحكم');
+        }
+        
+        function testElectron() {
+            const output = document.getElementById('results');
+            let info = [];
+            
+            info.push('🖥️ Platform: ' + navigator.platform);
+            info.push('🌐 Language: ' + navigator.language);
+            info.push('📱 User Agent: ' + navigator.userAgent.substring(0, 50) + '...');
+            
+            if (window.require) {
+                info.push('⚡ Electron: Available');
+            } else {
+                info.push('⚡ Electron: Not detected (running in browser)');
+            }
+            
+            if (window.electronAPI) {
+                info.push('🔌 Electron API: Available');
+            } else {
+                info.push('🔌 Electron API: Not available');
+            }
+            
+            showOutput(info.join('<br>'));
+        }
+        
+        function showOutput(message) {
+            const output = document.getElementById('output');
+            const results = document.getElementById('results');
+            results.innerHTML = message;
+            output.style.display = 'block';
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            console.log('🎯 Page fully loaded');
+            setTimeout(() => {
+                testElectron();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

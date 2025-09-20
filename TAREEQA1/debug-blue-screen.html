@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tareeqa POS - Debug Blue Screen</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            min-height: 100vh;
+            direction: rtl;
+        }
+        
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status {
+            background: rgba(34, 197, 94, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #059669;
+        }
+        
+        .test-results {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔧 Tareeqa POS - Blue Screen Debug</h1>
+        <p>تشخيص مشكلة الشاشة الزرقاء - Blue Screen Diagnosis</p>
+        
+        <div class="status">
+            <h3>✅ HTML Loading Successfully</h3>
+            <p>If you can see this page, HTML loading is working correctly.</p>
+            <p>إذا كنت ترى هذه الصفحة، فإن تحميل HTML يعمل بشكل صحيح.</p>
+        </div>
+        
+        <div class="info">
+            <h3>🔍 Diagnostic Information</h3>
+            <p><strong>Current URL:</strong> <span id="current-url">Loading...</span></p>
+            <p><strong>User Agent:</strong> <span id="user-agent">Loading...</span></p>
+            <p><strong>Platform:</strong> <span id="platform">Loading...</span></p>
+            <p><strong>Electron:</strong> <span id="electron-status">Checking...</span></p>
+            <p><strong>Node.js:</strong> <span id="node-status">Checking...</span></p>
+        </div>
+        
+        <div class="info">
+            <h3>🧪 Tests</h3>
+            <button onclick="testJavaScript()">Test JavaScript</button>
+            <button onclick="testDOM()">Test DOM Manipulation</button>
+            <button onclick="testConsole()">Test Console</button>
+            <button onclick="testElectronAPI()">Test Electron API</button>
+            <button onclick="loadMainPOS()">Load Main POS</button>
+        </div>
+        
+        <div id="test-results" class="test-results">
+            <h4>Test Results:</h4>
+            <div id="results-content">Click buttons above to run tests...</div>
+        </div>
+        
+        <div class="info">
+            <h3>💡 Blue Screen Solutions</h3>
+            <p><strong>Common Causes:</strong></p>
+            <ul>
+                <li>TypeScript compilation errors</li>
+                <li>React/JSX not loading properly</li>
+                <li>Module resolution issues</li>
+                <li>Missing dependencies</li>
+                <li>Electron security restrictions</li>
+            </ul>
+            
+            <p><strong>Solutions:</strong></p>
+            <ul>
+                <li>Use standalone HTML version (working)</li>
+                <li>Check browser console for errors</li>
+                <li>Verify all dependencies are installed</li>
+                <li>Check TypeScript compilation</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Debug page loaded successfully');
+        
+        // Load diagnostic information
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('current-url').textContent = window.location.href;
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            document.getElementById('platform').textContent = navigator.platform;
+            
+            // Check for Electron
+            if (window.require) {
+                document.getElementById('electron-status').textContent = 'Available (Electron environment)';
+                document.getElementById('node-status').textContent = 'Available via Electron';
+            } else {
+                document.getElementById('electron-status').textContent = 'Not available (Browser environment)';
+                document.getElementById('node-status').textContent = 'Not available';
+            }
+        });
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results-content');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<p>${message}</p>`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        function testJavaScript() {
+            try {
+                const test = [1, 2, 3].map(x => x * 2);
+                addResult('✅ JavaScript working: ' + test.join(', '), 'status');
+            } catch (error) {
+                addResult('❌ JavaScript error: ' + error.message, 'error');
+            }
+        }
+        
+        function testDOM() {
+            try {
+                const testDiv = document.createElement('div');
+                testDiv.textContent = 'Test element';
+                addResult('✅ DOM manipulation working', 'status');
+            } catch (error) {
+                addResult('❌ DOM error: ' + error.message, 'error');
+            }
+        }
+        
+        function testConsole() {
+            console.log('Console test from debug page');
+            console.error('Test error message');
+            console.warn('Test warning message');
+            addResult('✅ Console logging test completed (check DevTools)', 'status');
+        }
+        
+        function testElectronAPI() {
+            if (window.electronAPI) {
+                addResult('✅ Electron API available', 'status');
+            } else if (window.require) {
+                addResult('✅ Electron require available', 'status');
+            } else {
+                addResult('⚠️ No Electron API detected (running in browser)', 'info');
+            }
+        }
+        
+        function loadMainPOS() {
+            addResult('🔄 Attempting to load main POS interface...', 'info');
+            
+            // Try to load the standalone POS
+            try {
+                window.location.href = 'tareeqa-pos-standalone.html';
+            } catch (error) {
+                addResult('❌ Failed to load POS: ' + error.message, 'error');
+            }
+        }
+        
+        // Auto-run basic tests
+        setTimeout(() => {
+            testJavaScript();
+            testDOM();
+            testElectronAPI();
+        }, 1000);
+    </script>
+</body>
+</html>

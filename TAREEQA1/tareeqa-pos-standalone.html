@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طريقة POS - نظام نقاط البيع</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #8b9cf7 0%, #b8c5f2 50%, #d1d9f7 100%);
+            min-height: 100vh;
+            direction: rtl;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-left: 1px solid rgba(255, 255, 255, 0.25);
+            z-index: 50;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin: 0;
+        }
+        
+        .logo-text p {
+            font-size: 14px;
+            color: #2563eb;
+            margin: 0;
+        }
+        
+        .nav {
+            padding: 16px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .nav-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .nav-button:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+            color: #1e3a8a;
+        }
+        
+        .nav-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .main-content {
+            margin-right: 280px;
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .pos-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        
+        .product-name {
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+        
+        .product-name-en {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .product-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #059669;
+        }
+        
+        .cart {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .cart-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .cart-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .cart-btn.remove {
+            background: #ef4444;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        .totals {
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 16px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .total-final {
+            font-weight: bold;
+            font-size: 18px;
+            color: #1e3a8a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">ط</div>
+                    <div class="logo-text">
+                        <h1>طريقة</h1>
+                        <p>نظام نقاط البيع</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <div class="nav-buttons">
+                    <button class="nav-button active" onclick="showPOS()">
+                        🛒 نقطة البيع
+                    </button>
+                    <button class="nav-button" onclick="showProducts()">
+                        📦 المنتجات
+                    </button>
+                    <button class="nav-button" onclick="showHardware()">
+                        🖥️ الأجهزة
+                    </button>
+                    <button class="nav-button" onclick="showReports()">
+                        📊 التقارير
+                    </button>
+                    <button class="nav-button" onclick="showSettings()">
+                        ⚙️ الإعدادات
+                    </button>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="main-content">
+                <!-- Content will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Cart functionality
+        let cart = [];
+        
+        const products = [
+            { id: 1, name: 'قهوة عربية', nameEn: 'Arabic Coffee', price: 25.00, category: 'مشروبات', barcode: '6224000123456' },
+            { id: 2, name: 'شاي أحمر', nameEn: 'Black Tea', price: 15.00, category: 'مشروبات', barcode: '6224000123457' },
+            { id: 3, name: 'خبز بلدي', nameEn: 'Local Bread', price: 3.50, category: 'مخبوزات', barcode: '6224000123458' },
+            { id: 4, name: 'جبنة بيضاء', nameEn: 'White Cheese', price: 45.00, category: 'ألبان', barcode: '6224000123459' },
+            { id: 5, name: 'زيت زيتون', nameEn: 'Olive Oil', price: 85.00, category: 'أطعمة', barcode: '6224000123460' },
+            { id: 6, name: 'أرز مصري', nameEn: 'Egyptian Rice', price: 12.00, category: 'أطعمة', barcode: '6224000123461' }
+        ];
+        
+        function showPOS() {
+            setActiveButton(0);
+            document.getElementById('main-content').innerHTML = `
+                <div class="content-card">
+                    <h2 style="font-size: 28px; font-weight: bold; color: #1e3a8a; margin-bottom: 8px;">نقطة البيع</h2>
+                    <p style="color: #2563eb; margin-bottom: 32px;">Point of Sale System</p>
+                    
+                    <div class="pos-grid">
+                        <div>
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">المنتجات</h3>
+                            <div class="products-grid">
+                                ${generateProductCards()}
+                            </div>
+                        </div>
+                        
+                        <div class="cart">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">سلة التسوق</h3>
+                            <div id="cart-items" style="margin-bottom: 16px;">
+                                <p style="color: #6b7280; text-align: center; padding: 20px;">السلة فارغة</p>
+                            </div>
+                            
+                            <div class="totals">
+                                <div class="total-row">
+                                    <span>المجموع الفرعي:</span>
+                                    <span id="subtotal">0.00 ج.م</span>
+                                </div>
+                                <div class="total-row">
+                                    <span>ضريبة القيمة المضافة (14%):</span>
+                                    <span id="vat">0.00 ج.م</span>
+                                </div>
+                                <div class="total-row total-final">
+                                    <span>الإجمالي:</span>
+                                    <span id="total">0.00 ج.م</span>
+                                </div>
+                                
+                                <button class="checkout-btn" onclick="checkout()">
+                                    إتمام الشراء
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateProductCards() {
+            return products.map(product => `
+                <div class="product-card" onclick="addToCart(${product.id}, '${product.name}', ${product.price})" style="
+                    min-height: 120px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    padding: 20px;
+                ">
+                    <div class="product-name" style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">${product.name}</div>
+                    <div class="product-name-en" style="font-size: 14px; margin-bottom: 12px;">${product.nameEn}</div>
+                    <div class="product-price" style="font-size: 22px; font-weight: bold;">${product.price.toFixed(2)} ج.م</div>
+                </div>
+            `).join('');
+        }
+        
+        function addToCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            updateCart();
+        }
+        
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('subtotal');
+            const vatEl = document.getElementById('vat');
+            const totalEl = document.getElementById('total');
+            
+            if (!cartItems) return;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">السلة فارغة</p>';
+                if (subtotalEl) subtotalEl.textContent = '0.00 ج.م';
+                if (vatEl) vatEl.textContent = '0.00 ج.م';
+                if (totalEl) totalEl.textContent = '0.00 ج.م';
+                return;
+            }
+            
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight: 500; color: #1e3a8a;">${item.name}</div>
+                        <div style="font-size: 12px; color: #6b7280;">${item.price.toFixed(2)} ج.م × ${item.quantity}</div>
+                    </div>
+                    <div class="cart-controls">
+                        <button class="cart-btn remove" onclick="removeFromCart(${item.id})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="cart-btn" onclick="addToCart(${item.id}, '${item.name}', ${item.price})">+</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const vat = subtotal * 0.14; // Egyptian VAT 14%
+            const total = subtotal + vat;
+            
+            if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2) + ' ج.م';
+            if (vatEl) vatEl.textContent = vat.toFixed(2) + ' ج.م';
+            if (totalEl) totalEl.textContent = total.toFixed(2) + ' ج.م';
+        }
+        
+        function removeFromCart(id) {
+            const itemIndex = cart.findIndex(item => item.id === id);
+            if (itemIndex > -1) {
+                if (cart[itemIndex].quantity > 1) {
+                    cart[itemIndex].quantity -= 1;
+                } else {
+                    cart.splice(itemIndex, 1);
+                }
+                updateCart();
+            }
+        }
+        
+        function checkout() {
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const vat = total * 0.14;
+            const grandTotal = total + vat;
+            
+            alert(`تم إتمام الشراء بنجاح!\\nالإجمالي: ${grandTotal.toFixed(2)} ج.م\\nشكراً لك!`);
+            cart = [];
+            updateCart();
+        }
+        
+        function showProducts() {
+            setActiveButton(1);
+            document.getElementById('main-content').innerHTML = `
+                <div class="content-card">
+                    <h2 style="font-size: 28px; font-weight: bold; color: #1e3a8a; margin-bottom: 8px;">إدارة المنتجات</h2>
+                    <p style="color: #2563eb; margin-bottom: 32px;">Product Management</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <!-- Add New Product -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">إضافة منتج جديد</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <input type="text" id="product-name" placeholder="اسم المنتج" style="padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                <input type="text" id="product-name-en" placeholder="Product Name (English)" style="padding: 12px; border: 1px solid #d1d5db; border-radius: 8px;">
+                                <input type="number" id="product-price" placeholder="السعر" style="padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                <input type="text" id="product-barcode" placeholder="الباركود" style="padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                <select id="product-category" style="padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                    <option value="">اختر الفئة</option>
+                                    <option value="مشروبات">مشروبات</option>
+                                    <option value="أطعمة">أطعمة</option>
+                                    <option value="مخبوزات">مخبوزات</option>
+                                    <option value="ألبان">ألبان</option>
+                                    <option value="أدوية">أدوية</option>
+                                </select>
+                                <button onclick="addNewProduct()" style="background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">إضافة المنتج</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Statistics -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">إحصائيات المنتجات</h3>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                    <span>إجمالي المنتجات:</span>
+                                    <span style="font-weight: bold; color: #059669;">${products.length}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                    <span>المشروبات:</span>
+                                    <span style="font-weight: bold; color: #059669;">${products.filter(p => p.category === 'مشروبات').length}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                                    <span>الأطعمة:</span>
+                                    <span style="font-weight: bold; color: #059669;">${products.filter(p => p.category === 'أطعمة').length}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                    <span>متوسط السعر:</span>
+                                    <span style="font-weight: bold; color: #059669;">${(products.reduce((sum, p) => sum + p.price, 0) / products.length).toFixed(2)} ج.م</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Products List -->
+                    <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">قائمة المنتجات</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(30, 58, 138, 0.1);">
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #1e3a8a;">اسم المنتج</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #1e3a8a;">الاسم الإنجليزي</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #1e3a8a;">السعر</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #1e3a8a;">الفئة</th>
+                                        <th style="padding: 12px; text-align: right; border-bottom: 2px solid #1e3a8a;">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body">
+                                    ${generateProductsTable()}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function addNewProduct() {
+            const name = document.getElementById('product-name').value;
+            const nameEn = document.getElementById('product-name-en').value;
+            const price = parseFloat(document.getElementById('product-price').value);
+            const barcode = document.getElementById('product-barcode').value;
+            const category = document.getElementById('product-category').value;
+            
+            if (!name || !nameEn || !price || !barcode || !category) {
+                alert('يرجى ملء جميع الحقول!');
+                return;
+            }
+            
+            products.push({ id: products.length + 1, name, nameEn, price, category, barcode });
+            
+            // Clear form
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-name-en').value = '';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-barcode').value = '';
+            document.getElementById('product-category').value = '';
+            
+            // Refresh the products display
+            showProducts();
+            alert('تم إضافة المنتج بنجاح!');
+        }
+        
+        function generateProductsTable() {
+            return products.map(product => `
+                <tr>
+                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(0,0,0,0.1);">${product.name}</td>
+                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(0,0,0,0.1);">${product.nameEn}</td>
+                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(0,0,0,0.1);">${product.price.toFixed(2)} ج.م</td>
+                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(0,0,0,0.1);">${product.category}</td>
+                    <td style="padding: 12px; text-align: right; border-bottom: 1px solid rgba(0,0,0,0.1);">
+                        <button onclick="editProduct(${product.id})" style="background: #2563eb; color: white; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">تعديل</button>
+                        <button onclick="deleteProduct(${product.id})" style="background: #ff0000; color: white; padding: 8px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">حذف</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-name-en').value = product.nameEn;
+            document.getElementById('product-price').value = product.price;
+            document.getElementById('product-barcode').value = product.barcode;
+            document.getElementById('product-category').value = product.category;
+        }
+        
+        function deleteProduct(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+                const productIndex = products.findIndex(p => p.id === id);
+                if (productIndex > -1) {
+                    products.splice(productIndex, 1);
+                    showProducts();
+                    alert('تم حذف المنتج بنجاح!');
+                }
+            }
+        }
+        
+        function saveSettings() {
+            alert('تم حفظ الإعدادات بنجاح!\n\nسيتم تطبيق التغييرات عند إعادة تشغيل النظام.');
+        }
+        
+        function showHardware() {
+            setActiveButton(2);
+            document.getElementById('main-content').innerHTML = `
+                <div class="content-card">
+                    <h2 style="font-size: 28px; font-weight: bold; color: #1e3a8a; margin-bottom: 8px;">إدارة الأجهزة</h2>
+                    <p style="color: #2563eb; margin-bottom: 32px;">Hardware Management</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                        <!-- Barcode Scanner -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">🔍 ماسح الباركود</h3>
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>الحالة:</span>
+                                    <span id="scanner-status" style="color: #059669; font-weight: bold;">متصل</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>النوع:</span>
+                                    <span>USB HID Scanner</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                                    <span>آخر مسح:</span>
+                                    <span id="last-scan">لا يوجد</span>
+                                </div>
+                            </div>
+                            <button onclick="testScanner()" style="background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">اختبار الماسح</button>
+                        </div>
+                        
+                        <!-- Receipt Printer -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">🖨️ طابعة الفواتير</h3>
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>الحالة:</span>
+                                    <span id="printer-status" style="color: #059669; font-weight: bold;">جاهزة</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>النوع:</span>
+                                    <span>Thermal Printer 80mm</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                                    <span>الورق:</span>
+                                    <span id="paper-status" style="color: #059669;">متوفر</span>
+                                </div>
+                            </div>
+                            <button onclick="testPrinter()" style="background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">طباعة تجريبية</button>
+                        </div>
+                        
+                        <!-- Cash Drawer -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">💰 درج النقود</h3>
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>الحالة:</span>
+                                    <span id="drawer-status" style="color: #059669; font-weight: bold;">مغلق</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>النوع:</span>
+                                    <span>RJ-11 Cash Drawer</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                                    <span>آخر فتح:</span>
+                                    <span id="last-open">لا يوجد</span>
+                                </div>
+                            </div>
+                            <button onclick="openDrawer()" style="background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%;">فتح الدرج</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hardware Logs -->
+                    <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35); margin-top: 24px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">سجل الأجهزة</h3>
+                        <div id="hardware-logs" style="max-height: 200px; overflow-y: auto; background: #f8fafc; padding: 16px; border-radius: 8px; font-family: monospace;">
+                            <div style="color: #059669;">[${new Date().toLocaleTimeString('ar-EG')}] تم تهيئة النظام بنجاح</div>
+                            <div style="color: #2563eb;">[${new Date().toLocaleTimeString('ar-EG')}] ماسح الباركود متصل</div>
+                            <div style="color: #2563eb;">[${new Date().toLocaleTimeString('ar-EG')}] طابعة الفواتير جاهزة</div>
+                            <div style="color: #2563eb;">[${new Date().toLocaleTimeString('ar-EG')}] درج النقود متصل</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Hardware Functions
+        function testScanner() {
+            const scannerStatus = document.getElementById('scanner-status');
+            const lastScan = document.getElementById('last-scan');
+            const logs = document.getElementById('hardware-logs');
+            
+            scannerStatus.textContent = 'يختبر...';
+            scannerStatus.style.color = '#f59e0b';
+            
+            setTimeout(() => {
+                const testBarcode = '6224000123456';
+                scannerStatus.textContent = 'متصل';
+                scannerStatus.style.color = '#059669';
+                lastScan.textContent = testBarcode;
+                
+                const logEntry = document.createElement('div');
+                logEntry.style.color = '#059669';
+                logEntry.textContent = `[${new Date().toLocaleTimeString('ar-EG')}] تم مسح الباركود: ${testBarcode}`;
+                logs.appendChild(logEntry);
+                logs.scrollTop = logs.scrollHeight;
+                
+                alert('تم اختبار الماسح بنجاح!\\nالباركود: ' + testBarcode);
+            }, 2000);
+        }
+        
+        function testPrinter() {
+            const printerStatus = document.getElementById('printer-status');
+            const logs = document.getElementById('hardware-logs');
+            
+            printerStatus.textContent = 'يطبع...';
+            printerStatus.style.color = '#f59e0b';
+            
+            setTimeout(() => {
+                printerStatus.textContent = 'جاهزة';
+                printerStatus.style.color = '#059669';
+                
+                const logEntry = document.createElement('div');
+                logEntry.style.color = '#059669';
+                logEntry.textContent = `[${new Date().toLocaleTimeString('ar-EG')}] تم طباعة فاتورة تجريبية`;
+                logs.appendChild(logEntry);
+                logs.scrollTop = logs.scrollHeight;
+                
+                alert('تم طباعة الفاتورة التجريبية بنجاح!');
+            }, 3000);
+        }
+        
+        function openDrawer() {
+            const drawerStatus = document.getElementById('drawer-status');
+            const lastOpen = document.getElementById('last-open');
+            const logs = document.getElementById('hardware-logs');
+            
+            drawerStatus.textContent = 'مفتوح';
+            drawerStatus.style.color = '#f59e0b';
+            lastOpen.textContent = new Date().toLocaleTimeString('ar-EG');
+            
+            const logEntry = document.createElement('div');
+            logEntry.style.color = '#f59e0b';
+            logEntry.textContent = `[${new Date().toLocaleTimeString('ar-EG')}] تم فتح درج النقود`;
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+            
+            setTimeout(() => {
+                drawerStatus.textContent = 'مغلق';
+                drawerStatus.style.color = '#059669';
+                
+                const closeLogEntry = document.createElement('div');
+                closeLogEntry.style.color = '#059669';
+                closeLogEntry.textContent = `[${new Date().toLocaleTimeString('ar-EG')}] تم إغلاق درج النقود`;
+                logs.appendChild(closeLogEntry);
+                logs.scrollTop = logs.scrollHeight;
+            }, 5000);
+            
+            alert('تم فتح درج النقود!');
+        }
+        
+        function showReports() {
+            setActiveButton(3);
+            document.getElementById('main-content').innerHTML = `
+                <div class="content-card">
+                    <h2 style="font-size: 28px; font-weight: bold; color: #1e3a8a; margin-bottom: 8px;">التقارير والتحليلات</h2>
+                    <p style="color: #2563eb; margin-bottom: 32px;">Reports & Analytics</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; margin-bottom: 24px;">
+                        <!-- Daily Sales -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35); text-align: center;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 8px;">مبيعات اليوم</h3>
+                            <div style="font-size: 32px; font-weight: bold; color: #059669; margin-bottom: 8px;">1,250.00 ج.م</div>
+                            <div style="color: #6b7280;">15 معاملة</div>
+                        </div>
+                        
+                        <!-- Weekly Sales -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35); text-align: center;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 8px;">مبيعات الأسبوع</h3>
+                            <div style="font-size: 32px; font-weight: bold; color: #2563eb; margin-bottom: 8px;">8,750.00 ج.م</div>
+                            <div style="color: #6b7280;">105 معاملة</div>
+                        </div>
+                        
+                        <!-- Monthly Sales -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35); text-align: center;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 8px;">مبيعات الشهر</h3>
+                            <div style="font-size: 32px; font-weight: bold; color: #7c3aed; margin-bottom: 8px;">35,200.00 ج.م</div>
+                            <div style="color: #6b7280;">420 معاملة</div>
+                        </div>
+                        
+                        <!-- VAT Collected -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35); text-align: center;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 8px;">ضريبة القيمة المضافة</h3>
+                            <div style="font-size: 32px; font-weight: bold; color: #dc2626; margin-bottom: 8px;">4,928.00 ج.م</div>
+                            <div style="color: #6b7280;">14% معدل الضريبة</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Products -->
+                    <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35); margin-bottom: 24px;">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">أكثر المنتجات مبيعاً</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                            <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(30, 58, 138, 0.1); border-radius: 8px;">
+                                <span>كوكا كولا</span>
+                                <span style="font-weight: bold; color: #059669;">45 قطعة</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(30, 58, 138, 0.1); border-radius: 8px;">
+                                <span>شاي أحمر</span>
+                                <span style="font-weight: bold; color: #059669;">38 قطعة</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(30, 58, 138, 0.1); border-radius: 8px;">
+                                <span>خبز بلدي</span>
+                                <span style="font-weight: bold; color: #059669;">32 قطعة</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 12px; background: rgba(30, 58, 138, 0.1); border-radius: 8px;">
+                                <span>جبنة بيضاء</span>
+                                <span style="font-weight: bold; color: #059669;">28 قطعة</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Report Actions -->
+                    <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">إجراءات التقارير</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                            <button onclick="generateDailyReport()" style="background: #059669; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">تقرير يومي</button>
+                            <button onclick="generateWeeklyReport()" style="background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">تقرير أسبوعي</button>
+                            <button onclick="generateMonthlyReport()" style="background: #7c3aed; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">تقرير شهري</button>
+                            <button onclick="generateVATReport()" style="background: #dc2626; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">تقرير الضرائب</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Report Functions
+        function generateDailyReport() {
+            alert('تم إنشاء التقرير اليومي بنجاح!\n\nمبيعات اليوم: 1,250.00 ج.م\nعدد المعاملات: 15\nضريبة القيمة المضافة: 175.00 ج.م');
+        }
+        
+        function generateWeeklyReport() {
+            alert('تم إنشاء التقرير الأسبوعي بنجاح!\n\nمبيعات الأسبوع: 8,750.00 ج.م\nعدد المعاملات: 105\nضريبة القيمة المضافة: 1,225.00 ج.م');
+        }
+        
+        function generateMonthlyReport() {
+            alert('تم إنشاء التقرير الشهري بنجاح!\n\nمبيعات الشهر: 35,200.00 ج.م\nعدد المعاملات: 420\nضريبة القيمة المضافة: 4,928.00 ج.م');
+        }
+        
+        function generateVATReport() {
+            alert('تم إنشاء تقرير الضرائب بنجاح!\n\nإجمالي الضرائب المحصلة: 4,928.00 ج.م\nمعدل الضريبة: 14%\nالفترة: الشهر الحالي');
+        }
+        
+        function showSettings() {
+            setActiveButton(4);
+            document.getElementById('main-content').innerHTML = `
+                <div class="content-card">
+                    <h2 style="font-size: 28px; font-weight: bold; color: #1e3a8a; margin-bottom: 8px;">الإعدادات</h2>
+                    <p style="color: #2563eb; margin-bottom: 32px;">System Settings</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- General Settings -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">الإعدادات العامة</h3>
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">اسم المتجر:</label>
+                                    <input type="text" value="متجر طريقة" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">عنوان المتجر:</label>
+                                    <textarea style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right; resize: vertical;" rows="3">شارع التحرير، وسط البلد، القاهرة، مصر</textarea>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">رقم الهاتف:</label>
+                                    <input type="text" value="+20 2 1234 5678" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">الرقم الضريبي:</label>
+                                    <input type="text" value="123-456-789" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tax Settings -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">إعدادات الضرائب</h3>
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">معدل ضريبة القيمة المضافة:</label>
+                                    <input type="number" value="14" style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                    <small style="color: #6b7280;">المعدل المصري الرسمي: 14%</small>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>تطبيق الضريبة على جميع المنتجات</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>إظهار الضريبة في الفاتورة</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">المنتجات المعفاة من الضريبة:</label>
+                                    <select multiple style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                        <option value="أدوية">الأدوية</option>
+                                        <option value="كتب">الكتب</option>
+                                        <option value="خضروات">الخضروات</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Receipt Settings -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">إعدادات الفاتورة</h3>
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">عرض الفاتورة:</label>
+                                    <select style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                        <option value="80mm">80 مم (حراري)</option>
+                                        <option value="58mm">58 مم (حراري)</option>
+                                        <option value="a4">A4 (ليزر)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>طباعة تلقائية بعد البيع</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>إظهار شعار المتجر</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">رسالة الشكر:</label>
+                                    <textarea style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right; resize: vertical;" rows="2">شكراً لزيارتكم - نتطلع لخدمتكم مرة أخرى</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- System Settings -->
+                        <div style="background: rgba(255, 255, 255, 0.75); border-radius: 16px; padding: 24px; border: 1px solid rgba(255, 255, 255, 0.35);">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 16px;">إعدادات النظام</h3>
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">اللغة:</label>
+                                    <select style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                        <option value="ar">العربية</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">نظام الأرقام:</label>
+                                    <select style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; text-align: right;">
+                                        <option value="western">غربية (1234)</option>
+                                        <option value="arabic">عربية (١٢٣٤)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>تشغيل الأصوات</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" checked>
+                                        <span>النسخ الاحتياطي التلقائي</span>
+                                    </label>
+                                </div>
+                                <button onclick="saveSettings()" style="background: #059669; color: white; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 16px;">حفظ الإعدادات</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function setActiveButton(index) {
+            const buttons = document.querySelectorAll('.nav-button');
+            buttons.forEach((btn, i) => {
+                if (i === index) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            showPOS();
+            console.log('🎉 Tareeqa POS Standalone loaded successfully!');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+TAREEQA POS - SOFTWARE LICENSE AGREEMENT
+========================================
+
+Copyright (c) 2024 Tareeqa Technologies. All rights reserved.
+
+COMMERCIAL SOFTWARE LICENSE
+
+This software is licensed, not sold. By installing and using Tareeqa POS, you agree to the following terms:
+
+1. LICENSE GRANT
+   Subject to the terms of this Agreement, Tareeqa Technologies grants you a non-exclusive, non-transferable license to use Tareeqa POS solely for your internal business operations.
+
+2. RESTRICTIONS
+   You may not:
+   - Copy, modify, or distribute the software
+   - Reverse engineer, decompile, or disassemble the software
+   - Remove or alter any proprietary notices
+   - Use the software for any unlawful purpose
+
+3. HARDWARE BINDING
+   This software is bound to specific hardware configurations. Unauthorized transfers or modifications may result in license termination.
+
+4. SUPPORT AND UPDATES
+   Technical support and software updates are provided subject to a valid license and support agreement.
+
+5. WARRANTY DISCLAIMER
+   THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. TAREEQA TECHNOLOGIES DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED.
+
+6. LIMITATION OF LIABILITY
+   IN NO EVENT SHALL TAREEQA TECHNOLOGIES BE LIABLE FOR ANY DAMAGES ARISING FROM THE USE OF THIS SOFTWARE.
+
+7. TERMINATION
+   This license terminates automatically if you breach any terms. Upon termination, you must destroy all copies of the software.
+
+8. GOVERNING LAW
+   This agreement is governed by the laws of Egypt.
+
+For technical support: support@tareeqa-pos.com
+For licensing inquiries: sales@tareeqa-pos.com
+
+Tareeqa Technologies
+Cairo, Egypt
+www.tareeqa-pos.com
