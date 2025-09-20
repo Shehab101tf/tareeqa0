@@ -1,0 +1,136 @@
+{
+  "name": "tareeqa-pos",
+  "version": "1.0.0",
+  "description": "Advanced Egyptian Point of Sale System - نظام نقطة البيع المصري المتقدم",
+  "main": "dist/main/main.js",
+  "homepage": ".",
+  "author": {
+    "name": "Tareeqa Development Team",
+    "email": "dev@tareeqa.pos"
+  },
+  "license": "MIT",
+  "keywords": [
+    "pos",
+    "point-of-sale",
+    "egyptian",
+    "arabic",
+    "retail",
+    "electron",
+    "react",
+    "typescript"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
+    "dev:main": "webpack --config webpack.main.config.js --mode development --watch",
+    "dev:renderer": "webpack serve --config webpack.renderer.config.js --mode development",
+    "build": "npm run build:main && npm run build:renderer",
+    "build:main": "webpack --config webpack.main.config.js --mode production",
+    "build:renderer": "webpack --config webpack.renderer.config.js --mode production",
+    "start": "electron dist/main/main.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win7": "electron-builder --win --ia32 --config.extraMetadata.main=dist/main/main.js",
+    "dist:win10": "electron-builder --win --x64 --config.extraMetadata.main=dist/main/main.js",
+    "postinstall": "electron-builder install-app-deps",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "better-sqlite3": "^9.2.2",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "node-serialport": "^12.0.0",
+    "node-thermal-printer": "^4.4.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1",
+    "zustand": "^4.4.7",
+    "zod": "^3.22.4",
+    "framer-motion": "^10.16.16",
+    "date-fns": "^2.30.0",
+    "react-hook-form": "^7.48.2",
+    "@hookform/resolvers": "^3.3.2",
+    "react-hot-toast": "^2.4.1",
+    "lucide-react": "^0.294.0"
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "html-webpack-plugin": "^5.5.4",
+    "mini-css-extract-plugin": "^2.7.6",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "postcss": "^8.4.32",
+    "postcss-loader": "^7.3.3",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "typescript": "^5.3.3",
+    "ts-loader": "^9.5.1",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@types/node": "^20.10.5",
+    "@types/better-sqlite3": "^7.6.8",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1",
+    "playwright": "^1.40.1",
+    "@playwright/test": "^1.40.1"
+  },
+  "build": {
+    "appId": "com.tareeqa.pos",
+    "productName": "Tareeqa POS",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "ia32"]
+        }
+      ],
+      "icon": "assets/icons/icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tareeqa POS"
+    },
+    "extraResources": [
+      {
+        "from": "src/main/security/",
+        "to": "security/",
+        "filter": ["**/*.dll"]
+      }
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

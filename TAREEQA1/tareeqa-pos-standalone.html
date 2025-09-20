@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طريقة - نظام نقطة البيع الآمن</title>
+    <!-- Security Styles -->
+    <link rel="stylesheet" href="css/security.css">
     <title>طريقة POS - نظام نقاط البيع</title>
     <style>
         * {
@@ -28,18 +31,22 @@
             position: fixed;
             right: 0;
             top: 0;
-            height: 100%;
             width: 280px;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(8px);
-            border-left: 1px solid rgba(255, 255, 255, 0.25);
-            z-index: 50;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 32px 24px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000; /* Higher than header */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .sidebar-header {
             padding: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .logo {
@@ -115,9 +122,11 @@
         
         .main-content {
             margin-right: 280px;
+            margin-top: 60px; /* Space for header */
             flex: 1;
             padding: 24px;
             overflow-y: auto;
+            min-height: calc(100vh - 60px);
         }
         
         .content-card {
@@ -285,7 +294,23 @@
         </main>
     </div>
 
+    <!-- Security Scripts -->
+    <script src="js/security/SecurityManager.js"></script>
+    <script src="js/security/AuthUI.js"></script>
+    <script src="js/security/PermissionManager.js"></script>
+    <script src="js/security/SecureStorage.js"></script>
+    <script src="js/security/UserManager.js"></script>
+    <script src="js/payment/PaymentManager.js"></script>
+
     <script>
+        // Initialize Security System
+        let securityManager;
+        let authUI;
+        let permissionManager;
+        let secureStorage;
+        let userManager;
+        let paymentManager;
+        
         // Cart functionality
         let cart = [];
         
@@ -297,6 +322,82 @@
             { id: 5, name: 'زيت زيتون', nameEn: 'Olive Oil', price: 85.00, category: 'أطعمة', barcode: '6224000123460' },
             { id: 6, name: 'أرز مصري', nameEn: 'Egyptian Rice', price: 12.00, category: 'أطعمة', barcode: '6224000123461' }
         ];
+        
+        // Initialize Security System on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                console.log('🚀 Initializing Tareeqa POS Security System...');
+                
+                // Initialize security components
+                securityManager = new SecurityManager();
+                authUI = new AuthUI(securityManager);
+                permissionManager = new PermissionManager(securityManager);
+                secureStorage = new SecureStorage(securityManager);
+                userManager = new UserManager(securityManager);
+                paymentManager = new PaymentManager();
+                
+                // Make available globally
+                window.securityManager = securityManager;
+                window.authUI = authUI;
+                window.permissionManager = permissionManager;
+                window.secureStorage = secureStorage;
+                window.userManager = userManager;
+                window.paymentManager = paymentManager;
+                
+                // Try to restore previous session
+                const sessionRestored = await securityManager.restoreSession();
+                
+                if (sessionRestored) {
+                    console.log('✅ Session restored successfully');
+                    authUI.updateUserMenu(securityManager.currentUser);
+                    showPOS(); // Show main interface
+                } else {
+                    console.log('🔐 No valid session found, showing login screen');
+                    authUI.showLoginScreen();
+                }
+                
+                // Load secure data
+                loadSecureData();
+                
+                console.log('✅ Security system initialized successfully');
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize security system:', error);
+                alert('فشل في تهيئة نظام الأمان. يرجى إعادة تحميل الصفحة.');
+            }
+        });
+        
+        // Load data from secure storage
+        function loadSecureData() {
+            try {
+                // Load products from secure storage
+                const secureProducts = secureStorage.getSecure('products');
+                if (secureProducts && secureProducts.length > 0) {
+                    products.splice(0, products.length, ...secureProducts);
+                    console.log('✅ Products loaded from secure storage');
+                }
+                
+                // Load other secure data as needed
+                const settings = secureStorage.getSecure('settings');
+                if (settings) {
+                    console.log('✅ Settings loaded from secure storage');
+                }
+                
+            } catch (error) {
+                console.error('⚠️ Error loading secure data:', error);
+            }
+        }
+        
+        // Save data to secure storage
+        function saveSecureData() {
+            try {
+                secureStorage.setSecure('products', products);
+                secureStorage.setSecure('cart', cart);
+                console.log('✅ Data saved to secure storage');
+            } catch (error) {
+                console.error('⚠️ Error saving secure data:', error);
+            }
+        }
         
         function showPOS() {
             setActiveButton(0);
@@ -420,6 +521,19 @@
             }
         }
         
+        function showPaymentModal() {
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const vat = total * 0.14; // 14% Egyptian VAT
+            const grandTotal = total + vat;
+            
+            paymentManager.showPaymentModal(cart, total, vat, grandTotal);
+        }
+        
         function checkout() {
             if (cart.length === 0) {
                 alert('السلة فارغة!');
@@ -427,12 +541,69 @@
             }
             
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const vat = total * 0.14;
+            const vat = total * 0.14; // 14% Egyptian VAT
             const grandTotal = total + vat;
             
-            alert(`تم إتمام الشراء بنجاح!\\nالإجمالي: ${grandTotal.toFixed(2)} ج.م\\nشكراً لك!`);
+            // Generate receipt with user info
+            const receiptHTML = userManager.generateReceiptWithUser(cart, total, vat, grandTotal);
+            
+            // Show receipt in a modal
+            showReceiptModal(receiptHTML);
+            
+            // Clear cart
             cart = [];
             updateCart();
+            
+            // Save transaction to secure storage
+            saveTransaction(cart, total, vat, grandTotal);
+        }
+        
+        function showReceiptModal(receiptHTML) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            `;
+            
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+        }
+        
+        function printReceipt() {
+            window.print();
+        }
+        
+        function saveTransaction(cartItems, total, vat, grandTotal) {
+            try {
+                const transaction = {
+                    id: 'T' + Date.now(),
+                    date: new Date().toISOString(),
+                    items: cartItems,
+                    total: total,
+                    vat: vat,
+                    grandTotal: grandTotal,
+                    user: userManager.getCurrentUserForReceipt()
+                };
+                
+                const transactions = secureStorage.getSecure('transactions', { defaultValue: [] });
+                transactions.push(transaction);
+                secureStorage.setSecure('transactions', transactions);
+                
+                console.log('✅ Transaction saved:', transaction.id);
+            } catch (error) {
+                console.error('⚠️ Error saving transaction:', error);
+            }
         }
         
         function showProducts() {
@@ -512,6 +683,11 @@
         }
         
         function addNewProduct() {
+            // Check permission
+            if (!permissionManager.validateAction('products.create', 'add_product')) {
+                return;
+            }
+            
             const name = document.getElementById('product-name').value;
             const nameEn = document.getElementById('product-name-en').value;
             const price = parseFloat(document.getElementById('product-price').value);
@@ -524,6 +700,9 @@
             }
             
             products.push({ id: products.length + 1, name, nameEn, price, category, barcode });
+            
+            // Save to secure storage
+            saveSecureData();
             
             // Clear form
             document.getElementById('product-name').value = '';

@@ -1,0 +1,452 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Tareeqa POS Global Styles
+ * Professional Egyptian POS System Styling
+ */
+
+/* Import Arabic fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap');
+
+/* Base styles */
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  body {
+    @apply font-arabic text-base-ar bg-gradient-to-br from-slate-50 to-blue-50 text-gray-900 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    @apply text-right;
+  }
+
+  [dir="ltr"] {
+    @apply text-left;
+  }
+
+  /* Arabic text optimization */
+  .arabic-text {
+    font-family: 'Cairo', 'Amiri', 'Segoe UI Arabic', 'Tahoma', sans-serif;
+    font-feature-settings: 'liga', 'kern', 'calt';
+    text-rendering: optimizeLegibility;
+  }
+
+  /* English text optimization */
+  .english-text {
+    font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  }
+
+  ::-webkit-scrollbar-corner {
+    @apply bg-gray-100;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Glass morphism card */
+  .glass-card {
+    @apply bg-glass-white backdrop-blur-xl border border-glass-border rounded-glass shadow-glass;
+  }
+
+  .glass-card-lg {
+    @apply bg-glass-white backdrop-blur-xl border border-glass-border rounded-glass shadow-glass-lg;
+  }
+
+  /* Island card */
+  .island-card {
+    @apply bg-white rounded-island shadow-island border border-gray-100;
+  }
+
+  .island-card-lg {
+    @apply bg-white rounded-island shadow-island-lg border border-gray-100;
+  }
+
+  /* Floating panel */
+  .floating-panel {
+    @apply bg-white/95 backdrop-blur-xl rounded-glass shadow-island-lg border border-white/20;
+  }
+
+  /* Glass button */
+  .glass-button {
+    @apply bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg transition-all duration-300 hover:bg-white/30 hover:-translate-y-0.5 hover:shadow-glass-lg;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-primary-600 font-semibold py-3 px-6 rounded-lg border border-primary-200 transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  /* Danger button */
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  /* Success button */
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-right;
+  }
+
+  /* Input field with error */
+  .input-field-error {
+    @apply input-field border-red-300 focus:ring-red-500;
+  }
+
+  /* Select field */
+  .select-field {
+    @apply w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-right appearance-none;
+  }
+
+  /* Textarea field */
+  .textarea-field {
+    @apply w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-right resize-none;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-800;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-4 border-gray-200 border-t-primary-600;
+  }
+
+  /* Glow effect */
+  .glow-primary {
+    @apply shadow-glow-primary;
+  }
+
+  .glow-blue {
+    @apply shadow-glow-blue;
+  }
+
+  /* Hover glow */
+  .hover-glow-primary {
+    @apply hover:shadow-glow-primary transition-shadow duration-300;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply mb-8;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-primary-900 mb-2;
+  }
+
+  .page-subtitle {
+    @apply text-lg text-gray-600;
+  }
+
+  /* Section header */
+  .section-header {
+    @apply mb-6;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900 mb-2;
+  }
+
+  .section-subtitle {
+    @apply text-gray-600;
+  }
+
+  /* Grid layouts */
+  .grid-responsive {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .grid-2-cols {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  .grid-3-cols {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .grid-4-cols {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  /* Flex utilities */
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .flex-start {
+    @apply flex items-center justify-start;
+  }
+
+  .flex-end {
+    @apply flex items-center justify-end;
+  }
+
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    @apply animate-fade-in;
+  }
+
+  .animate-slide-up {
+    @apply animate-slide-up;
+  }
+
+  .animate-slide-down {
+    @apply animate-slide-down;
+  }
+
+  .animate-scale-in {
+    @apply animate-scale-in;
+  }
+
+  /* Touch targets for mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Focus styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+
+  /* Disabled state */
+  .disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+
+  /* Loading state */
+  .loading {
+    @apply opacity-75 pointer-events-none;
+  }
+}
+
+/* Utility styles */
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom scrollbar */
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.7);
+  }
+
+  /* Text selection */
+  .select-none {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Backdrop blur utilities */
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+
+  .backdrop-blur-4xl {
+    backdrop-filter: blur(72px);
+  }
+
+  /* Safe area utilities for mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Print utilities */
+  @media print {
+    .print-hidden {
+      display: none !important;
+    }
+
+    .print-visible {
+      display: block !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .glass-card {
+      @apply border-2 border-gray-400;
+    }
+
+    .glass-button {
+      @apply border-2 border-gray-400;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Dark mode support (future enhancement) */
+  @media (prefers-color-scheme: dark) {
+    .dark-mode {
+      @apply bg-gray-900 text-white;
+    }
+  }
+}
+
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* RTL-specific styles */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .rtl-rotate {
+  transform: rotate(180deg);
+}
+
+/* Windows 7 compatibility styles */
+@supports not (backdrop-filter: blur(10px)) {
+  .glass-card {
+    @apply bg-white/90 shadow-xl;
+  }
+
+  .glass-button {
+    @apply bg-white/80 shadow-md;
+  }
+
+  .floating-panel {
+    @apply bg-white shadow-xl;
+  }
+}
+
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.contain-layout {
+  contain: layout;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-strict {
+  contain: strict;
+}
